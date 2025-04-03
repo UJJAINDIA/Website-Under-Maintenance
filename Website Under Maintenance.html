@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Maintenance</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            transform: rotateX(0deg);
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        h1:hover {
+            transform: rotateX(360deg);
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ccc;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .countdown div {
+            margin: 0 15px;
+            perspective: 800px;
+        }
+
+        .countdown span {
+            display: block;
+            font-size: 3em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            transform: rotateX(0deg);
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        .countdown span:hover {
+             transform: rotateX(360deg);
+        }
+
+        .countdown small {
+            font-size: 0.8em;
+            color: #aaa;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            margin: 0 15px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1.5em;
+        }
+
+        .social-icons a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown div span {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="threeCanvas"></canvas>
+    </div>
+    <div class="container">
+        <h1>Website Under Maintenance</h1>
+        <p>We're currently working on improving our website. We'll be back shortly!</p>
+        <div class="countdown" id="countdown">
+            <div>
+                <span id="days">00</span>
+                <small>Days</small>
+            </div>
+            <div>
+                <span id="hours">00</span>
+                <small>Hours</small>
+            </div>
+            <div>
+                <span id="minutes">00</span>
+                <small>Minutes</small>
+            </div>
+            <div>
+                <span id="seconds">00</span>
+                <small>Seconds</small>
+            </div>
+        </div>
+        <p>Stay tuned for updates!</p>
+        <div class="social-icons">
+            <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Set the date we're counting down to
+        const countDownDate = new Date().getTime() + (24 * 60 * 60 * 1000);
+
+        // Update the countdown every 1 second
+        const x = setInterval(function() {
+
+            // Get today's date and time
+            const now = new Date().getTime();
+
+            // Find the distance between now and the countdown date
+            const distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in the element with id="countdown"
+            document.getElementById("days").innerHTML = days < 10 ? '0' + days : days;
+            document.getElementById("hours").innerHTML = hours < 10 ? '0' + hours : hours;
+            document.getElementById("minutes").innerHTML = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById("seconds").innerHTML = seconds < 10 ? '0' + seconds : seconds;
+
+            // If the countdown is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "WE ARE LIVE!";
+            }
+        }, 1000);
+
+        // 3D Scene Setup
+        let scene, camera, renderer, stars;
+        let starField; // Renamed for clarity
+        let glitchTimeout;
+
+        function init() {
+            const container = document.getElementById('canvas-container');
+            const canvas = document.getElementById('threeCanvas');
+
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000);
+
+            createStarfield(); // Renamed function
+            addLights();
+            animate();
+        }
+
+        function createStarfield() {
+            const starCount = 2000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+
+            for (let i = 0; i < starCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 2] = (Math.random() - 0.5) * 2000;
+
+                const color = new THREE.Color();
+                color.setHSL(Math.random(), 1, 0.9);
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                sizeAttenuation: true,
+                vertexColors: true,
+            });
+
+            starField = new THREE.Points(geometry, material); // Renamed variable
+            scene.add(starField);
+        }
+
+        function addLights() {
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            starField.position.x += 0.1;
+            starField.position.y += 0.1;
+            starField.position.z += 0.1;
+
+            // Add a subtle glitch effect
+            if (Math.random() < 0.05) { // 5% chance of glitch
+                startGlitch();
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function startGlitch() {
+            if (glitchTimeout) {
+                clearTimeout(glitchTimeout);
+            }
+
+            const originalColor = new THREE.Color();
+            originalColor.copy(starField.material.color);
+
+            starField.material.color.setHex(0xff0000); //temporary red color
+
+            glitchTimeout = setTimeout(() => {
+                starField.material.color.copy(originalColor);
+            }, 100);
+        }
+
+        function handleResize() {
+            const canvas = document.getElementById('threeCanvas');
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', handleResize);
+        init();
+    </script>
+    <script src="https://kit.fontawesome.com/yourfontawesomekit.js" crossorigin="anonymous"></script>
+</body>
+</html>
+
